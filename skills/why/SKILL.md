@@ -1,8 +1,10 @@
 ---
 name: why
 description: >-
-  Find evidence-backed root causes before rework, and question the purpose of a check before trying another way past it.
-  要重做或被檢查擋下時，先查清目的、設計與根本原因，再決定做法及如何證明有效。
+  Evidence-backed rework review. Use when a fix keeps failing, when reviewed work must be redone,
+  or before trying another way past a check. Blocked: answer three questions (purpose, what the check
+  protects, what counts as progress). Rework: write a ten-question WHY.md and get an independent model's verdict.
+  重做前的原因審查：修正一直失敗、審查過的工作要重做、或想繞過檢查之前用。被擋住先答三題；真的要重做才寫十題 WHY.md，交另一個模型判斷。
 ---
 
 # why：動手前先想清楚為什麼
