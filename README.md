@@ -3,7 +3,7 @@
 **Ask why before doing the work again.**
 Evidence-backed rework review for Claude Code and Codex.
 
-WHY helps coding agents stop repeating fixes that don't address the cause. Before rework, it examines user impact, design intent, and evidence, then produces a ten-question WHY.md for independent review. Blocked tasks start with a lighter three-question check.
+WHY helps coding agents stop repeating fixes that don't address the cause. For real rework, WHY produces a ten-question WHY.md for a read-only review by a model from a different family; when a check blocks you, answer three questions in your notes with no report. The skill and hook design are included; you configure the reviewer and any hook; automatic blocking is not built in.
 
 [中文說明在下方](#why--中文)
 
@@ -25,7 +25,7 @@ Not for one-off small edits, pure queries, or urgent incident containment. Conta
 ## What you get
 
 - A cause analysis where every "why" has evidence (file, line, run), not a guess.
-- A change that removes the cause, not just the visible symptom — and a list of what to drop.
+- A proposed change that removes the cause, not just the visible symptom — and a list of what to drop.
 - A verification standard you can measure: which layer, which data, which exact expected value.
 - A six-line verdict from an independent reviewer: is this the real cause or a surface result, do purpose and method connect, will it work, what is irrelevant, and why.
 
@@ -73,7 +73,7 @@ You may use, modify, and share it while keeping the full license notice, but **y
 **動手重做前，先想清楚為什麼。**
 給 Claude Code 與 Codex 用的「重做前原因審查」，每個原因都要有證據。
 
-WHY 讓寫程式的 AI 不再一直重複沒打中原因的修正。重做之前，它先查清楚對使用者的影響、當初的設計用意與證據，寫成十題的 WHY.md，交給另一個模型獨立判斷。只是被擋住時，先用比較輕的三個問題。
+WHY 讓寫程式的 AI 不再一直重複沒打中原因的修正。真的要重做時，寫十題的 WHY.md，交給不同家族的另一個模型只讀判斷；只是被檢查擋住時，在工作紀錄答三題就好，不用寫報告。本 repo 附技能與 hook 設計；審查模型和 hook 要自己設定，沒有內建自動攔截。
 
 ## 什麼時候用
 
@@ -93,7 +93,7 @@ WHY 讓寫程式的 AI 不再一直重複沒打中原因的修正。重做之前
 ## 你會得到什麼
 
 - 每一層「為什麼」都附證據（哪個檔、哪一行、哪次執行），不是用猜的。
-- 拿掉原因、不只讓症狀消失的做法，以及哪些不相關的事該刪掉。
+- 提出拿掉原因、不只讓症狀消失的做法，以及哪些不相關的事該刪掉。
 - 量得到的驗收標準：在哪一層量、用哪份資料、預期的確定值。
 - 獨立審查回六行：是真的原因還是表面結果、目的和做法連不連得起來、會不會解決、哪些不相關、判斷理由。
 
