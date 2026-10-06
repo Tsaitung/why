@@ -7,111 +7,117 @@ description: >-
   重做前的原因審查：修正一直失敗、審查過的工作要重做、或想繞過檢查之前用。被擋住先答三題；真的要重做才寫十題 WHY.md，交另一個模型判斷。
 ---
 
-# why：動手前先想清楚為什麼
+# why: Think through why before doing the work again
 
-## 一眼看完（先照這五行做）
+繁體中文版：[SKILL.zh-TW.md](SKILL.zh-TW.md)
 
-1. 這件事的**目的**是什麼？做完，正式環境裡**誰多一樣能用的東西、或少一個錯**，或**解除哪一件上線的阻礙**？說不出就先查；查完確定沒有，就不做。
-2. 擋我、或我要改的東西，**當初為什麼設計成這樣、在保護什麼**？那個被保護的東西現在已經有了嗎？
-3. 我寫的「原因」是**答案還是結果**？只講「哪裡壞了」，就繼續問為什麼。
-4. 問到流程或設計那一層：**設計有沒有被檢查過？該做的規劃有沒有做？那一步真的需要嗎？**
-5. 這次跟前幾次**是同一個原因**嗎？是，就改源頭一次修掉，不再只補一處。
+## Quick view (follow these five lines first)
 
-## 什麼時候用、用到多深
+1. What is the **purpose** of this work? When it is done, who in production gets **one more usable thing or one fewer error**, or **which launch blocker is removed**? If you cannot say, investigate; if you confirm there is none, do not do it.
+2. Why was the thing blocking me, or the thing I want to change, designed this way in the first place, and what is it protecting? Does that protected thing already exist now?
+3. Is the “cause” I wrote an **answer or a result**? If it only says “where it broke,” keep asking why.
+4. When you reach the process or design layer: **Was the design checked? Was the required planning done? Is that step really necessary?**
+5. Is this the same cause as the previous times? If so, change the source and fix it once instead of patching only one place.
 
-思考方法可供代理與人類團隊使用；協作 hook 只擋專案明確設定的重做動作、工作與執行者。
+## When to use it and how deep to go
 
-| 情況 | 做什麼 |
+The thinking method can be used by agents and human teams; the collaboration hook blocks only the rework actions, work, and actors explicitly configured by the project.
+
+| Situation | What to do |
 |---|---|
-| 要重做：重凍規格、退回重修、續派、重新登錄、只重跑失敗的，或改已凍結規格 | 四步全做，寫 WHY.md、交判斷；有安裝協作 hook 的設定範圍才會被擋 |
-| 被擋下、要試另一種做法前；想讀閘門程式找「怎麼過」前；要做的事只給系統紀錄看，例如補標籤、狀態或關單 | 做第一步，在回報或工作紀錄寫三行：目的／保護什麼／什麼叫進度。不寫 WHY.md，不停其他工作。答得出是進度就做；答不出先查；查完確定不是進度才不做，記進專案的待改善清單 |
-| 一次性小改、正常收尾、一般檢查、純查詢與只讀診斷、產生判斷收據本身 | 不要求四步與十題；只讀查詢永遠不擋 |
-| 需要即時處理的事故止血 | 先依既有事故流程處理；穩定後再用本方法檢討，不讓十題延誤止血 |
+| Rework: refreeze a specification, send work back for repair, continue an assignment, re-register it, rerun only what failed, or change a frozen specification | Do all four steps, write WHY.md, and submit it for a verdict; only the configured scope with a collaboration hook installed is blocked |
+| Blocked, about to try another approach; about to read gate code to find “how to get through”; or the work only updates system records such as a label, status, or closure | Do the first step and write three lines in the report or work log: purpose / what is protected / what counts as progress. Do not write WHY.md or stop other work. If it is progress, do it; if you cannot answer, investigate; if investigation confirms it is not progress, do not do it and add it to the project’s improvement list |
+| One-off small change, normal closeout, general check, pure query or read-only diagnosis, or producing the verdict receipt itself | The four steps and ten questions are not required; read-only queries are never blocked |
+| Incident response that needs immediate containment | Follow the existing incident process first; review with this method after things are stable so the ten questions do not delay containment |
 
-## 第一步：三件事（還不問為什麼）
+## Step 1: Three things (do not ask why yet)
 
-1. **目的**：這件工作最後要的結果是什麼、誰用、用來做什麼？引用需求提出者或現行規格的原文。
-2. **設計意涵**：擋我或我要改的東西，當初為什麼設計成這樣、在保護什麼？去讀規格或當時的決定紀錄，不猜。再問：**它保護的東西現在已經有了嗎？證據在哪？** 已經有了，就核對現有證據，不為了過檢查重做同一件事。
-3. **什麼叫進度**：做完之後，使用者看到或拿到的東西會不會改變？或是解除了哪一件上線的阻礙、完成了上線必要的驗證？都不是，就只是手續。反過來問：「這件永遠不做，會有誰拿到錯的、少拿、或被擋住？」查過確定沒有人，才不做；不知道不等於沒影響。安全、權限、資料保護與必要的人員核准仍照既有要求處理。
+1. **Purpose**: What result must this work produce, who will use it, and what will they use it for? Quote the original wording from the requester or the current specification.
+2. **Design intent**: Why was the thing blocking me, or the thing I want to change, designed this way, and what is it protecting? Read the specification or the decision record from that time; do not guess. Then ask: **Does the thing it protects already exist? Where is the evidence?** If it already exists, check the existing evidence instead of repeating the same work just to pass a check.
+3. **What counts as progress**: After it is done, will the user see or receive something different? Or will it remove a launch blocker or complete verification required for launch? If neither, it is only procedure. Ask the reverse question: “If this is never done, who will receive something wrong, receive less, or remain blocked?” If you have checked and confirmed no one will, do not do it; not knowing does not mean there is no impact. Continue to follow existing requirements for safety, permissions, data protection, and necessary human approvals.
 
-三件有一件答不出來，下一步是去查，不是去修。
+If you cannot answer any one of the three, the next step is to investigate, not to fix.
 
-## 第二步：一層一層問為什麼，每層都問「這是答案，還是結果？」
+## Step 2: Ask why layer by layer, and at every layer ask “Is this an answer or a result?”
 
-| 看到這種寫法 | 通常是 | 通用例子 |
+| Wording you see | Usually is | General example |
 |---|---|---|
-| 「沒傳／沒列／寫錯／少了／壞了」 | 結果 | 「某個入口沒把原本的範圍傳進去」 |
-| 「我去試每一種規則／換一種做法」 | 繞過，不是原因 | 「讀閘門程式一條一條試規則」 |
-| 「流程沒有要求先做這件事，讓同類遺漏沒有被發現」 | 可能是根本原因，仍須證據 | 「寫規格前沒有確認這個值經過哪些入口、在哪裡被使用」 |
+| “Was not sent / was not listed / was written incorrectly / is missing / is broken” | Result | “One entry point did not pass in the original scope” |
+| “I will try every rule / switch to another approach” | A workaround, not a cause | “Read the gate code and try each rule one by one” |
+| “The process did not require doing this first, so the same omission was not found” | Could be the root cause; still needs evidence | “Before writing the specification, no one confirmed which entry points this value passes through or where it is used” |
 
-每寫一層，過四個檢查：
+For every layer you write, run four checks:
 
-1. 在講「哪裡壞了、發生了什麼」？還是結果，再問為什麼。
-2. 把它改掉，同一類問題會不會換個地方再發生？會，就還不是根本原因。
-3. 它是一個決定、一條缺的規則、或流程少的一步？有證據證明，才停。誰能改、是否需要外部處理，在第 8 題另外寫。
-4. 它是不是用來擋掉、蓋掉或繞過別的東西？例如「想擋掉舊樣式」、加一條全面重設、加例外躲檢查、放寬檢查。是的話，這個擋法還是症狀：再問「被擋的那個東西為什麼還在？是不是有一件已經決定、卻還沒做完的事？」正常重做也一樣。不是就不用追問。
+1. Are you describing “where it is broken and what happened,” or a result? If it is a result, ask why again.
+2. If you change it, could the same kind of problem appear somewhere else? If yes, it is not the root cause yet.
+3. Is it a decision, a missing rule, or a missing process step? Stop only when evidence proves it. Who can change it, and whether outside handling is needed, belongs in question 8.
+4. Is it being used to block, cover up, or route around something else? For example, “want to block the old styling,” add a blanket reset, add an exception to evade a check, or loosen a check. If yes, that block is still a symptom: ask “Why is the blocked thing still there? Is there something already decided but not finished?” The same applies to normal rework. If no, do not keep asking.
 
-會影響這次因果的工作、規則或決定，要寫它**現在的狀態**並附證據：做完沒、卡在哪。只寫名字不寫狀態，看不出它是不是真正卡住的地方。只是順帶提到的，不用寫。
+For work, rules, or decisions that affect this causal chain, write their **current status** with evidence: is it done, and where is it blocked? Naming it without its status does not show whether it is actually the point of blockage. Things mentioned only in passing do not need to be written.
 
-先分清楚：設計送審、審查抓到錯、退回重修，而且錯誤還沒被拿去正式使用，這是**正常重做**，代表審查有發揮作用。正常重做時，第 2～4 題問到「設計哪裡錯、為什麼漏」就算到底，源頭修法可以記進待改善清單。只有錯誤已經被拿去用、或應該擋卻沒擋到，才要往下追流程並改源頭。
+First distinguish this case: a design was sent for review, the review found an error, it was sent back for repair, and the error has not been used in production. That is **normal rework**, and it means the review worked. During normal rework, questions 2–4 stop once they reach “what was wrong in the design and why was it missed”; the source fix can go on the improvement list. Only when the error has already been used, or something that should have been blocked was not blocked, do you continue into the process and change the source.
 
-問到流程或設計那一層，回頭查三件：
+When you reach the process or design layer, check these three things again:
 
-- **設計有沒有被檢查過？** 誰檢查、照什麼標準、範圍有沒有涵蓋這次出錯的地方？沒涵蓋，為什麼？
-- **該做的規劃有沒有做？** 有沒有先追資料的來龍去脈、讓需求提出者確認樣品、事先訂好驗收條件、用合法且能反映實際情況的資料量過？查明少了哪一步，附證據；不把這些例子一律變成新手續。
-- **那一步真的需要嗎？** 只補能擋住這一類問題、讓交付往前走的那一步，不為了周全把清單加長。不需要的東西就考慮移除。
+- **Was the design checked?** Who checked it, against what standard, and did the scope cover where this error occurred? If not, why not?
+- **Was the required planning done?** Was the data trail followed first, did the requester confirm the sample, were acceptance conditions set in advance, and was it checked with valid data that reflects real conditions? Identify the missing step and attach evidence; do not turn all of these examples into new procedures.
+- **Is that step really necessary?** Add only the step that can stop this class of problem and move delivery forward. Do not lengthen the checklist for completeness. Consider removing things that are not needed.
 
-每一層都附證據，例如哪個檔、哪一行、哪次執行。檔案正在被改，就寫明所查的提交或內容雜湊。沒有證據的原因標成假設，先量測。
+Attach evidence to every layer, such as a file, line, or run. If the file is being changed, state the commit or content hash you inspected. Mark a cause as a hypothesis when it has no evidence, and measure first.
 
-## 第三步：寫 WHY.md（只有重做要寫；十題標題逐字照抄）
+## Step 3: Write WHY.md (only for rework; copy the ten headings exactly)
 
-位置：專案自訂，例如 `.why/WHY.md`。
+Location: project-defined, for example `.why/WHY.md`.
 
 ```markdown
-## 0. 事情
-## 1. 看到什麼
-## 2. 為什麼會這樣
-## 3. 那又為什麼
-## 4. 再問一次為什麼（流程或設計哪裡讓它發生）
-## 5. 為什麼存在、真的需要嗎
-## 6. 不做會怎樣
-## 7. 跟最近 5 次比
-## 8. 做法
-## 9. 怎麼證明有效
+## 0. The issue
+## 1. What we observed
+## 2. Why did it happen
+## 3. And why was that
+## 4. Why again (what in the process or design let it happen)
+## 5. Why does it exist, and is it really needed
+## 6. What happens if we don't do it
+## 7. Compared with the last 5 times
+## 8. The approach
+## 9. How we will prove it worked
 ```
 
-- 第 0 題：一句話指出這次是哪件事、哪個問題。
-- 第 1 題：寫量到的現象，附證據。
-- 第 2～4 題：寫第二步的因果層次，每層接上一層、附證據；第 4 題要通過四個檢查。
-- 第 5 題：寫第一步的目的與設計意涵，加上「整個刪掉會怎樣」。
-- 第 6 題：寫第一步的進度判斷，指出具體卡住哪個功能、使用者或上線階段；答「沒影響」就不做。
-- 第 7 題：跟最近 5 次的原因比，有同原因就寫要改的源頭；不足 5 次就列實際有的紀錄，沒有紀錄也要明說。
-- 第 8 題：改哪裡、為什麼能拿掉第 4 題的原因、同類還會不會再發生；需要誰處理或哪個核准，也寫在這裡。
-- 第 9 題：在哪一層量、用哪份合法資料、預期的確定值。量的是第 4 題的原因不再成立，不能只看現象消失。改驗證標準時，要附證據寫舊標準為什麼錯、新標準為什麼對；不能只是放寬到剛好等於量到的失敗值。
+- Question 0: State in one sentence what this event and problem are.
+- Question 1: Write the measured observation and attach evidence.
+- Questions 2–4: Write the causal layers from Step 2, with each layer connected to the previous one and backed by evidence; question 4 must pass all four checks.
+- Question 5: Add Step 1’s purpose and design intent, including “what happens if we delete the whole thing.”
+- Question 6: Make Step 1’s progress decision and name the specific feature, user, or launch stage that is blocked; if the answer is “no impact,” do not do it.
+- Question 7: Compare the cause with the last 5 times. If the cause is the same, write the shared source that must change; if there are fewer than 5 times, list the records that actually exist and say clearly when there are no records.
+- Question 8: State what will change, why it removes the cause in question 4, and whether the same class will happen again; also state who must handle it or what approval is needed.
+- Question 9: State the layer to measure, the valid data to use, and the exact expected value. Measure that the cause in question 4 no longer exists; do not look only for the symptom to disappear. If you change the verification standard, attach evidence for why the old standard was wrong and the new one is right; do not merely loosen it until it equals the failure you measured.
 
-任一題答「不知道」，先做只讀量測，不開始依賴該答案的重做。
+If any question is answered “I don’t know,” perform a read-only measurement first; do not start rework that depends on that answer.
 
-## 第四步：交給另一個 AI 判
+The Chinese headings (see [SKILL.zh-TW.md](SKILL.zh-TW.md)) may be used as well, but each WHY.md uses one language only. The hook decides which heading set it matches from its own configuration.
 
-使用「你的判斷指令（見 hook-design.md）」。此指令由你的專案設定；本技能沒有附判斷工具或 hook 實作。協作方式見同資料夾的[設計說明](hook-design.md)。
+## Step 4: Have another AI judge it
 
-如果安裝的資料夾裡有 `local.md`，先讀它：裡面是你這台機器或團隊自己的設定，例如判斷指令、WHY.md 放在哪、hook 擋哪些人和動作。`local.md` 不放進本 repo；本技能其他檔案請照 repo 原樣安裝、不要在本機改，要改就改 repo，再同步回本機。
+Use “your judge command” (see hook-design.md). The command is configured by your project; this skill does not include a judge tool or hook implementation. The collaboration method is described in the [design document](hook-design.md) in this folder.
 
-- 由使用者在自己的環境選擇具體的判斷模型與派工帳號，例如用 `CODEX_HOME` 分開設定；判斷模型仍須是另一個不同家族的模型。不要在技能裡寫死具體模型名稱、帳號或內部路徑。用唯讀方式依設計說明的 9 條標準判斷。
-- 判「過」：收據符合設計說明的放行條件後，10 分鐘內可以做；WHY.md 改一個字就要重判。這只代表原因與做法檢查通過，不取代既有的人員核准。
-- 判「不夠深」：依下列回覆的判斷理由修正因果與做法，把表面結果換成真正原因、把連不上目的的做法改掉，並刪掉不相關內容；不是往清單加東西。連續兩次被判不夠深，先找新證據，不要只改字句。
-- 判斷未完成或無法核對收據，不當成「過」；只停該次重做，查詢與其他工作繼續。
-- 回報時，用一句白話帶出第 4 題的根本原因和第 6 題的進度，不貼十題全文。
+If the installed folder contains `local.md`, read it first: it contains settings for your machine or team, such as the judge command, where WHY.md lives, and which people and actions the hook blocks. `local.md` does not belong in this repo; install the other files in this skill exactly as the repo provides them, and do not edit the local copy. If you need to change it, change the repo and sync it back to the machine.
 
-## 請別的 AI 審查或判斷時，一定要規定回覆格式
+- The user chooses the concrete judge model and dispatch account in their own environment, for example by separating settings with `CODEX_HOME`; the judge model must still come from a different family. Do not hard-code a model name, account, or internal path in the skill. Use read-only access and the 9 standards in the design document.
+- Verdict `過` (pass): after the receipt meets the release conditions in the design document, the work can start within 10 minutes; changing even one character in WHY.md requires a new verdict. This only means the cause and approach passed review; it does not replace existing human approval.
+- Verdict `不夠深` (not deep enough): use the reasons in the response below to fix the causal chain and approach, replace the surface result with the real cause, and remove unrelated content; do not add more items. If it is judged not deep enough twice in a row, find new evidence instead of only changing wording.
+- An incomplete verdict or a receipt that cannot be checked is not a pass; stop only that rework and continue queries and other work.
+- When reporting, use one plain-language sentence to state the root cause from question 4 and the progress from question 6; do not paste all ten questions.
 
-審查、QA 或判斷 WHY.md 時，都要用下面六行。要評的是思考有沒有找到真正問題、做法能不能達到目的，不是問清單還缺什麼。
+In an English environment, the verdict may be written as `PASS` / `NOT_DEEP_ENOUGH` instead. Configure the hook to accept the selected combination of verdict labels and heading language.
 
-1. **判定**：判斷 WHY.md 時只寫「過」或「不夠深」；一般審查使用派工時指定的固定字樣，例如 `PASS`、`CHANGES_REQUIRED` 或 `REPLAN_REQUIRED`。
-2. **真的問題還是表面結果**：引用對方當成原因的那一句，判斷它是原因還是結果。
-3. **目的和做法**：各用一句話寫出目的與做法，再說明兩者的關係。
-4. **會不會解決**：寫「會」、「不會」或「說不準」，並說明原因。
-5. **不相關的**：列出跟真正問題無關、應刪掉的內容；沒有就明說「沒有」，不要硬列。
-6. **判斷理由**：用一段白話說明整體判斷。
+## When asking another AI to review or judge, always require this response format
 
-只給判定、沒有理由，收到的人只能猜。只問「缺什麼」，容易讓人一直加入無關內容，卻離真正問題越來越遠。
+Reviews, QA, and WHY.md judgments must use the six lines below. They evaluate whether the reasoning found the real problem and whether the approach can achieve the purpose, not whether the checklist is missing items.
+
+1. **Verdict**: For a WHY.md judgment, write only `過` (pass) or `不夠深` (not deep enough); in an English environment, `PASS` or `NOT_DEEP_ENOUGH` is also allowed. For a general review, use the fixed label specified when the work was assigned, such as `PASS`, `CHANGES_REQUIRED`, or `REPLAN_REQUIRED`.
+2. **Real problem or surface result**: Quote the sentence treated as the cause and decide whether it is a cause or a result.
+3. **Purpose and approach**: State the purpose and approach in one sentence each, then explain how they relate.
+4. **Will it work**: Write “yes,” “no,” or “can’t tell,” with the reason.
+5. **Not relevant**: List content unrelated to the real problem and to be removed; if there is none, say “none” instead of forcing a list.
+6. **Reasoning**: Explain the overall verdict in plain language.
+
+A verdict without reasons leaves the recipient guessing. Asking only “what is missing?” makes people keep adding unrelated material while moving farther from the real problem.

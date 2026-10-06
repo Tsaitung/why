@@ -37,7 +37,7 @@ Not for one-off small edits, pure queries, or urgent incident containment. Conta
 | Hook design and judge standards (`skills/why/hook-design.md`) | Included, as documentation |
 | Cross-model reviewer | **You configure it** — any read-only model from a different family than the one doing the work |
 | Automatic blocking of rework commands | **Not included** — implement a hook from the design if you want it |
-| Language | The skill text and WHY.md headings are currently Traditional Chinese; an English edition is planned |
+| Language | English (SKILL.md, hook-design.md) and Traditional Chinese (SKILL.zh-TW.md, hook-design.zh-TW.md) |
 
 Machine- or team-specific settings (your judge command, where WHY.md lives, who the hook applies to) go in a `local.md` next to the skill. It is not part of this repo.
 
@@ -45,7 +45,7 @@ Machine- or team-specific settings (your judge command, where WHY.md lives, who 
 
 1. Copy the whole `skills/why` folder to `~/.claude/skills/why/` (Claude Code) or `~/.agents/skills/why/` (Codex).
 2. When something is blocked, ask the agent to "use the why skill": it answers the three questions before trying anything else.
-3. Before rework, the agent writes WHY.md in a place you choose (for example `.why/WHY.md`) using the ten headings in the skill.
+3. Before rework, the agent writes WHY.md in a place you choose (for example `.why/WHY.md`) using the ten headings in the skill (English or Chinese).
 4. Give WHY.md to a different model, read-only, with the judge standards and six-line reply format from `hook-design.md`.
 5. `過` → do the rework. `不夠深` → fix the reasoning the verdict points at (replace the surface cause, drop unrelated work), not by adding more items.
 
@@ -105,7 +105,7 @@ WHY 讓寫程式的 AI 不再一直重複沒打中原因的修正。真的要重
 | hook 設計與判斷標準（`skills/why/hook-design.md`） | 有附，是說明文件 |
 | 跨模型審查 | **要自己設定**：用跟做事的模型不同家族的模型，只讀 |
 | 自動擋住重做指令 | **沒有附**：需要的話照設計說明自己做 hook |
-| 語言 | 技能內容與 WHY.md 標題目前是繁體中文，英文版之後補 |
+| 語言 | 英文（SKILL.md、hook-design.md）與繁體中文（SKILL.zh-TW.md、hook-design.zh-TW.md） |
 
 每台機器或團隊自己的設定（判斷指令、WHY.md 放哪、hook 擋誰）放在技能旁邊的 `local.md`，不放進本 repo。
 
@@ -113,7 +113,7 @@ WHY 讓寫程式的 AI 不再一直重複沒打中原因的修正。真的要重
 
 1. 把整個 `skills/why` 資料夾複製到 `~/.claude/skills/why/`（Claude Code）或 `~/.agents/skills/why/`（Codex）。
 2. 被擋住時，請 AI「用 why 技能」：它會先答三題，再決定要不要做。
-3. 要重做前，AI 照技能裡的十題標題，在你指定的位置寫 WHY.md（例如 `.why/WHY.md`）。
+3. 要重做前，AI 照技能裡的十題標題（中文或英文），在你指定的位置寫 WHY.md（例如 `.why/WHY.md`）。
 4. 把 WHY.md 交給另一個模型，只讀，附上 `hook-design.md` 的判斷標準與六行回覆格式。
 5. 判「過」就重做；判「不夠深」就照理由修正因果（把表面結果換成真正原因、刪掉不相關的），不是一直往上加東西。
 

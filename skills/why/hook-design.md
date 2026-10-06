@@ -1,128 +1,130 @@
-# 協作 hook 設計
+# Collaborative hook design
+
+繁體中文版：[hook-design.zh-TW.md](hook-design.zh-TW.md)
 
 This document describes a rework checkpoint; it contains no hook implementation.
 
-hook 是在指定動作執行前，先確認條件的自動檢查。本文件說明它要和 WHY 技能、唯讀判斷模型及判斷收據如何協作；實際指令與接入方式由各專案決定。
+A hook is an automatic check that confirms conditions before a specified action runs. This document explains how it works with the WHY skill, the read-only judge model, and the verdict receipt; each project decides the actual command and integration method.
 
-## 為什麼需要 hook
+## Why a hook is needed
 
 Written rules can be skipped under deadline pressure, so the checkpoint belongs at the rework action.
 
-文字規則即使寫了「先問為什麼」，趕工時也可能沒被啟動。代理被擋住後，很容易直接換做法、補一個地方，再跑一次。hook 要在真的重做前，讓這一步不能被習慣性略過。
+Even when written rules say “ask why first,” they may not be triggered under deadline pressure. After an agent is blocked, it is easy to switch approaches, patch one place, and run again. A hook makes this step impossible to skip by habit before actual rework.
 
-它要求先問清目的與設計、查到流程或設計的原因，再讓另一個模型判斷。重點是阻止同原因反覆修補，讓工作更接近可用的交付；不是讓每件小事多一輪手續。
+It requires clarifying purpose and design, tracing the process or design cause, then having another model judge it. The point is to stop repeated patches for the same cause and move work toward usable delivery; it is not to add another procedural round to every small task.
 
-## 擋哪類動作
+## Which actions to block
 
 Only configured rework actions are gated; ordinary work and read-only queries stay available.
 
-專案先列清楚受保護的工作範圍、執行者與實際入口。只有這個範圍內，真正執行下列動作時才檢查：
+The project first lists the protected work scope, actors, and actual entry points. The check runs only within that scope, when one of these actions is actually performed:
 
-- 重凍規格：失敗或退件後，重新凍結同一份規格。
-- 退回重修：把同一件工作送回實作，再開始一輪修改。
-- 續派：續做先前失敗或退回的工作。
-- 重新登錄：把同一件工作以新一輪重新登錄。
-- 只重跑失敗的項目：再次執行先前失敗的驗證。
-- 改已凍結規格：寫入或編輯已確認、已凍結的規格內容。
+- Refreezing a specification: after a failure or rejection, freeze the same specification again.
+- Sending work back for repair: send the same work back to implementation and begin another modification round.
+- Continuing an assignment: continue work that previously failed or was sent back.
+- Re-registering work: register the same work again as a new round.
+- Rerunning only failed items: execute a verification that failed earlier one more time.
+- Changing a frozen specification: write or edit specification content that has been confirmed and frozen.
 
-正常收尾、一般檢查、一次性小改、只讀查詢與診斷不擋。產生判斷收據的受控判斷流程也不擋，避免自己等自己。即時事故止血走既有事故流程，不讓本檢查延誤必要處置。
+Normal closeout, general checks, one-off small changes, read-only queries and diagnosis are not blocked. The controlled judge flow that produces a verdict receipt is not blocked either, so it cannot end up waiting on itself. Immediate incident containment follows the existing incident process; this check must not delay necessary action.
 
-不擋設定範圍以外的人、工作或專案，也不鎖住整個工作區。某次重做缺條件時，只停那一次；其他工作照常進行。
+People, work, or projects outside the configured scope are not blocked, and the whole workspace is not locked. If one rework instance lacks a condition, stop only that instance; other work continues.
 
-## 放行條件與收據
+## Release conditions and receipts
 
 A passing review must match the current WHY content and be no more than ten minutes old.
 
-放行必須同時滿足：
+Release is allowed only when all of these conditions hold:
 
-1. 專案設定位置的 WHY.md 有技能所定的 0～9 十題，且每題有內容。十題的標題與寫法以 [SKILL.md 第三步](SKILL.md#第三步寫-whymd只有重做要寫十題標題逐字照抄)為準。
-2. 另一個不同家族的模型，依下節 9 條標準，用唯讀方式判「過」。寫十題的模型不能自己判。
-3. 收據記錄該次判斷的結果、時間、判斷模型與可核對的判斷紀錄，並綁定這件工作及 WHY.md 內容的 SHA-256 雜湊。
-4. 收據的雜湊與目前 WHY.md 完全相同；即使只改一個字，也必須重判。
-5. 執行當下距判斷完成不超過 10 分鐘；超過 10 分鐘、時間不合理、沒有收據或無法核對，都不放行該次重做。
+1. The WHY.md at the project-configured location has the ten 0–9 questions required by the skill, and every question has content. The headings and wording follow [Step 3 of SKILL.md](SKILL.md#step-3-write-whymd-only-for-rework-copy-the-ten-headings-exactly).
+2. A model from a different family judges it “pass” read-only under the 9 standards in the next section. The model that wrote the ten questions cannot judge them.
+3. The receipt records that judgment’s result, time, judge model, and checkable judgment record, and binds the work and the SHA-256 hash of the WHY.md content.
+4. The receipt hash exactly matches the current WHY.md; changing even one character requires a new judgment.
+5. At the time of execution, no more than 10 minutes have passed since the judgment finished. A receipt that is older than 10 minutes, has an unreasonable time, is missing, or cannot be checked does not release that rework.
 
-收據證明這一版理由與做法已被判過，不證明修復已完成，也不代替既有的核准。測試模式的收據與正式收據分開，不能用測試收據放行正式工作。
+A receipt proves that this version of the reasoning and approach was judged; it does not prove that the repair is complete or replace existing approvals. Test-mode receipts and production receipts are separate; a test receipt cannot release production work.
 
-本文件中的「你的判斷指令」指專案設定的呼叫方式：讀目前 WHY.md 與真正的近期紀錄、交給判斷模型，完成判斷後由受控流程產生收據。判斷失敗或沒完成，不得生成通過收據；不在此指定任何實作程式碼。
+“Your judge command” in this document means the project-configured call: read the current WHY.md and the actual recent records, give them to the judge model, and have a controlled process produce the receipt after judgment. If judgment fails or does not finish, do not generate a passing receipt; this document does not prescribe any implementation code.
 
-判斷模型與派工帳號由使用者在自己的環境設定，例如用 `CODEX_HOME` 分開選擇。使用者自行選擇具體模型與帳號，判斷模型仍須是另一個不同家族的模型；本設計不寫死具體模型名稱、帳號或內部路徑。
+The user chooses the judge model and dispatch account in their own environment, for example by selecting separate `CODEX_HOME` settings. The judge model must still come from a different family; this design does not hard-code a model name, account, or internal path.
 
-## 唯讀判斷與 9 條標準
+## Read-only judgment and the 9 standards
 
 The reviewer reads evidence and checks nine causal criteria without changing the work.
 
-判斷模型只讀 WHY.md、相關規格、證據與最近 5 次的紀錄，不改檔、不執行會改變資料的指令，也不操作外部服務。由呼叫端設定唯讀權限，只開必要的讀取工具；不能只靠提示說「請不要改」。收據由判斷模型之外的受控流程產生。
+The judge model reads WHY.md, related specifications, evidence, and the last 5 records only. It does not edit files, run commands that change data, or operate external services. The caller configures read-only permissions and enables only the necessary read tools; a prompt saying “please do not change anything” is not enough. A controlled process outside the judge model creates the receipt.
 
-近期紀錄應從這件工作真正的歷史取得；不能因為換了名稱、措辭或自選一份舊文件，就忽略原本的驗證標準。不足 5 次時用實際有的紀錄，不能捏造歷史。
+Recent records must come from the real history of this work. Do not ignore the original verification standard because a name or wording changed, or because someone chose an old document. If there are fewer than 5 records, use the ones that actually exist; do not invent history.
 
-1. 每層「為什麼」都接上一層，沒有跳到無關原因。
-2. 最後一層是流程或設計讓問題發生的原因，不停在「漏了、壞了、寫錯了」。
-3. 每層都有證據；證據真的存在，內容也能證明那一層的說法。路徑看起來像真的，不算證據。
-4. 「不做會怎樣」指出具體受影響的功能、使用者或上線階段。答「沒影響」，或說不出阻礙哪件交付，就判「不夠深」，不為了手續而重做。
-5. 跟之前是同一原因，就要改共同源頭；只補另一個位置不算。
-6. 提出的做法能拿掉第 4 題的原因，而不是只讓目前現象消失。
-7. 沒有尚未查明的「不知道」。有未知就先量測，不靠猜測判「過」。
-8. 第 9 題寫明在哪一層量、用哪份合法資料、預期的確定值，例如數字、字串或結束碼；量的是第 4 題的原因不再成立。只寫「會過」「跟以前一樣」不算。
-9. 同一件事的第 9 題若與上一份不同，必須附證據說明舊標準為什麼錯、新標準為什麼對。不能把標準放寬到剛好等於已量到的失敗結果。
+1. Each “why” connects to the previous layer without jumping to an unrelated cause.
+2. The final layer is the process or design reason that allowed the problem to happen; do not stop at “was omitted,” “was broken,” or “was written incorrectly.”
+3. Every layer has evidence; the evidence really exists and proves the layer’s claim. A path that looks real is not evidence.
+4. “What happens if we do not do it” names the specific feature, user, or launch stage affected. If the answer is “no impact,” or it cannot say which delivery is blocked, judge it “not deep enough”; do not rework for procedure alone.
+5. If it is the same cause as before, change the shared source; adding only another patch does not count.
+6. The proposed approach removes the cause from question 4 instead of only making the current symptom disappear.
+7. There is no “I don’t know” that has not been investigated. Measure unknowns first; do not judge “pass” based on a guess.
+8. Question 9 states the layer to measure, the valid data to use, and the exact expected value, such as a number, string, or exit code; measure that the cause from question 4 no longer exists. “It will pass” or “same as before” alone does not count.
+9. If question 9 differs from the previous document for the same work, attach evidence explaining why the old standard was wrong and the new standard is right. Do not loosen the standard until it happens to equal the failure you measured.
 
-另外兩條：
+Two more rules:
 
-- WHY 裡只要寫到某個東西是用來擋掉、蓋掉或繞過別的東西，那個擋法還是症狀；WHY 沒回答「被擋的東西為什麼還在、有沒有已決定卻沒做完的事和它的現況」，就判「不夠深」。正常重做也一樣；沒有這種擋法就不追問。
-- 會影響這次因果的工作、規則或決定，要寫現在的狀態並附證據；只寫名字就判「不夠深」。順帶提到的不用寫。
+- If WHY says something is used to block, cover up, or route around something else, that block is still a symptom. If WHY does not answer “Why is the blocked thing still there, and is there something already decided but unfinished, with its current status?”, judge it “not deep enough.” The same applies to normal rework; if there is no such block, do not ask further.
+- Work, rules, or decisions that affect this causal chain must state their current status with evidence; writing only the name is “not deep enough.” Things mentioned only in passing do not need to be written.
 
-「不知道」交給判斷模型依第 7 條判，不要用程式比對字串：一般句子裡出現這三個字（例如「工具不知道帳號剩多少額度」）不代表沒查明。程式只擋空白題。
+Give “I don’t know” to the judge model to assess under standard 7; do not match the three characters in code. Those characters can appear in an ordinary sentence such as “the tool does not know how much quota is left” without meaning the issue is unresolved. The program only blocks empty questions.
 
-WHY.md 的判斷結果只有「過」與「不夠深」；一般審查則使用派工時指定的固定字樣。模型錯誤、逾時、無法讀取必要證據是判斷未完成，不是「過」。
+For WHY.md judgments, use the Traditional Chinese verdicts `過` (pass) and `不夠深` (not deep enough); an English environment may use `PASS` / `NOT_DEEP_ENOUGH`. Configure the hook to accept the selected set of verdict labels and heading language. General reviews use the fixed labels specified at assignment. A model error, timeout, or inability to read necessary evidence is an incomplete judgment, not “pass.”
 
-## 判斷回覆格式
+## Judgment response format
 
 Every review response follows the six-line format owned by the skill.
 
-六行的意思與寫法以 [SKILL.md 的回覆格式章節](SKILL.md#請別的-ai-審查或判斷時一定要規定回覆格式)為現行定義。本文件只列同一份格式，避免另外維護一套判斷規則：
+The meaning and wording of the six lines are the current definition in [the response-format section of SKILL.md](SKILL.md#when-asking-another-ai-to-review-or-judge-always-require-this-response-format). This document lists the same format so that there is no second set of judgment rules:
 
 ```text
-判定：WHY.md 判斷用過／不夠深；一般審查用派工時指定的固定字樣
-真的問題還是表面結果：引用當成原因的句子，判斷是原因或結果
-目的和做法：目的、做法，以及兩者的關係
-會不會解決：會／不會／說不準，以及原因
-不相關的：應刪掉的無關內容；沒有就明說沒有
-判斷理由：白話理由
+Verdict: For a WHY.md judgment, use `過` (pass) or `不夠深` (not deep enough); an English environment may use `PASS` or `NOT_DEEP_ENOUGH`, with the hook configured to accept the selected set; for a general review, use the fixed label specified at assignment
+Real problem or surface result: Quote the sentence treated as the cause and decide whether it is a cause or a result
+Purpose and approach: State the purpose, the approach, and how they relate
+Will it work: State yes / no / can’t tell, and why
+Not relevant: Unrelated content to remove; if there is none, say none
+Reasoning: Explain the verdict in plain language
 ```
 
-這份格式評的是思考。只給判定沒有理由，會讓收到的人只能猜；只問「缺什麼」，會讓內容越加越多，連無關部分也被保留，反而離真正問題更遠。
+This format evaluates the thinking. A verdict without reasons leaves the recipient guessing; asking only “what is missing?” makes the content grow, including unrelated parts, and move farther from the real problem.
 
-## 如何避免誤擋
+## How to avoid false blocks
 
 Inspect the action that will actually run, rather than matching words anywhere in the request.
 
-只判真的被執行的指令或寫入動作，確認實際目標、工作目錄、參數與執行者。下列都不算重做：
+Judge only a command or write action that will actually execute, confirming its target, working directory, parameters, and actor. None of the following is rework:
 
-- 在文件、註解、訊息或紀錄中提到重做指令。
-- 查看 `--help` 或讀取指令的說明。
-- 只定義函式，沒有呼叫裡面的重做動作。
-- 查詢、搜尋或讀取 WHY.md、收據與判斷紀錄。
-- 另一個專案剛好有同名指令，但實際目標不在受保護範圍。
+- Mentioning a rework command in a document, comment, message, or record.
+- Viewing `--help` or reading a command’s documentation.
+- Defining a function without calling the rework action inside it.
+- Querying, searching, or reading WHY.md, receipts, or judgment records.
+- A different project happens to have a command with the same name, while the actual target is outside the protected scope.
 
-只讀查詢永遠不擋。找不到原因時，查詢仍必須可用。被擋的訊息應指出缺哪個條件、去哪裡寫十題，以及「有不知道就先量，量測指令不會擋」，讓人能繼續查。
+Read-only queries are never blocked. When the cause cannot be found, queries must still work. A block message should say which condition is missing, where to write the ten questions, and that “I don’t know” can be measured first and the measurement command will not be blocked, so investigation can continue.
 
-## 威脅範圍
+## Threat scope
 
 This design deters habitual skipping; it is not a security boundary against deliberate forgery by the same user.
 
-這個設計防習慣性跳過，沒有承諾防同一使用者蓄意造假。若代理與 hook 使用同一帳號、同一台電腦，代理能改到收據、判斷紀錄或 hook 設定，只靠本機檔案不能建立它無法跨越的保護。
+This design prevents habitual skipping, but it does not promise to stop deliberate forgery by the same user. If the agent and hook use the same account on the same computer, and the agent can edit receipts, judgment records, or hook settings, local files alone cannot create protection that the agent cannot cross.
 
-協作流程可拒絕直接手寫收據，並核對真正的判斷紀錄，降低無意間跳過的機會。這不代表能識破所有刻意偽造。要防蓄意造假，需要使用者不能修改的外部信任來源、受保護的簽章與權限分離；這超出本設計的目的。不要為了這個未承諾的防護，持續疊加偵測規則。
+The collaboration flow can reject hand-written receipts and check the real judgment record, reducing accidental skips. It cannot detect every deliberate forgery. Preventing deliberate forgery requires an external trust source the user cannot modify, protected signatures, and separation of permissions; that is outside this design’s purpose. Do not keep adding detection rules for an unpromised protection.
 
-## 怎麼驗收
+## How to verify it
 
 Replay real action histories and test whether the reviewer separates shallow answers from evidenced root causes.
 
-驗收各專案自己的實作時，先從合法、可讀的過去紀錄取一個明確時間範圍。逐筆標記「該擋」與「不該擋」，處理完有疑義的項目後，固定這份比對資料。不能只挑幾個容易通過的例子。
+When verifying each project’s implementation, start with a clear time range from lawful, readable historical records. Mark each record “should block” or “should not block,” resolve disputed items, and freeze this comparison set. Do not select only examples that are easy to pass.
 
-- **動作回放**：沒有有效收據時，該擋的逐筆全部擋下；其他動作誤擋 0 筆。比對的是同一筆動作的結果，不只看總數。
-- **邊界回放**：涵蓋正常收尾、一般檢查、純查詢、文字提到、`--help`、未呼叫的函式、同名但不同目標的指令，以及其他執行者。全部應放行。
-- **收據檢查**：同一份有效 WHY 與真實通過收據應放行；9 分 59 秒的收據應有效，10 分 01 秒應失效。改一字、缺收據、雜湊不合、無法核對判斷紀錄或使用測試收據，都應擋下該次重做。
-- **判斷檢查**：同一事件各做一份表面答案與一份附證據、追到流程或設計的答案。兩份都依技能所定六行回覆；表面答案判「不夠深」，指出被當成原因的表面結果、目的與做法的關係、做法能否解決問題，以及該刪掉的無關內容；想到底且符合全部標準的判「過」。另測證據不存在、同原因只補一處、沒有確定驗證值、事後放寬標準，都應判「不夠深」。
-- **完整流程**：先被擋、寫十題、另一個模型判斷、產生對得上的收據，再放行該次重做。確認全程只讀查詢與其他人的工作都能繼續。
+- **Action replay**: Without a valid receipt, every action that should block is blocked, and false blocks for other actions are 0. Compare the result of each same action, not only the total count.
+- **Boundary replay**: Cover normal closeout, general checks, read-only queries, text mentions, `--help`, uncalled functions, same-named commands with different targets, and other actors. All should be allowed.
+- **Receipt checks**: The same valid WHY and a genuine passing receipt should be allowed; a receipt 9 minutes 59 seconds old should be valid, and one 10 minutes 01 second old should be invalid. Changing one character, missing the receipt, a hash mismatch, an unverifiable judgment record, or a test receipt should block that rework.
+- **Judgment checks**: For the same event, prepare one surface answer and one answer that includes evidence and traces to the process or design. Both must use the six-line format; the surface answer is judged “not deep enough” and must identify the surface result treated as the cause, the relation between purpose and approach, whether the approach can solve the problem, and content to remove; an answer that reaches the root and meets all standards is judged “pass.” Also test missing evidence, patching only one location for the same cause, no exact verification value, and loosening the standard after the fact; each should be judged “not deep enough.”
+- **Complete flow**: Block first, write the ten questions, have another model judge them, produce a matching receipt, and then release that rework. Confirm that read-only queries and other people’s work can continue throughout.
 
-保留資料範圍、實作版本、逐筆結果與判斷紀錄。這些是驗收方法，不代表本 repo 已實作或驗證任何 hook。
+Keep the data scope, implementation version, per-record results, and judgment records. These are verification methods; they do not mean this repo has implemented or verified any hook.
